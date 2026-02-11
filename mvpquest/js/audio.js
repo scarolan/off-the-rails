@@ -73,7 +73,7 @@ const GameAudio = {
         this.stopMusic();
         this.music = name;
         this.musicElement = new Audio(path);
-        this.musicElement.loop = true;
+        this.musicElement.loop = false;
         this.musicElement.volume = this.musicVolume;
         this.musicElement.play().catch(() => {});
     },
