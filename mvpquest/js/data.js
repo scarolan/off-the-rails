@@ -125,8 +125,8 @@ const CHAR_SPRITES = {
         {c:0,r:3}, {c:3,r:3}, {c:6,r:3}, {c:19,r:3}
     ]}, // brown shirt, short hair
     priya:    { layers: [
-        {c:0,r:8}, {c:3,r:8}, {c:10,r:8}, {c:21,r:8}
-    ]}, // teal shirt, glasses (row 8 — row 4 has no body)
+        {c:0,r:8}, {c:3,r:8}, {c:10,r:8}, {c:20,r:8}
+    ]}, // teal shirt, long hair (row 8)
     oracle:   { layers: [
         {c:0,r:5}, {c:3,r:5}, {c:14,r:5}, {c:20,r:5}
     ]}, // dark robe, long hair
