@@ -16,6 +16,8 @@ const T = {
     FLOWER: 14, // non-blocking
     // Building exterior
     WALL_T: 20, WALL_F: 21, DOOR_EXT: 24, CAVE: 29,
+    WALL_TL: 90, WALL_TR: 91, WALL_L: 92, WALL_R: 93,
+    WALL_BL: 94, WALL_B: 95, WALL_BR: 96,
     // Indoor
     FLOOR_W: 30, WALL_I_T: 33, WALL_I_F: 34, DOOR_INT: 35,
     WALL_I_TL: 70, WALL_I_TR: 71,
@@ -53,8 +55,15 @@ const TILE_ATLAS = {
     [T.BUSH]:     { s:'base', c:11, r:5  },
     [T.ROCK]:     { s:'base', c:4,  r:6  },
     [T.FLOWER]:   { s:'base', c:14, r:5  },
-    [T.WALL_T]:   { s:'base', c:6,  r:6  },
-    [T.WALL_F]:   { s:'base', c:6,  r:7  },
+    [T.WALL_T]:   { s:'base', c:8,  r:9  },
+    [T.WALL_F]:   { s:'base', c:8,  r:10 },
+    [T.WALL_TL]:  { s:'base', c:5,  r:7  },
+    [T.WALL_TR]:  { s:'base', c:6,  r:7  },
+    [T.WALL_L]:   { s:'base', c:7,  r:10 },
+    [T.WALL_R]:   { s:'base', c:9,  r:10 },
+    [T.WALL_BL]:  { s:'base', c:5,  r:8  },
+    [T.WALL_B]:   { s:'base', c:8,  r:11 },
+    [T.WALL_BR]:  { s:'base', c:6,  r:8  },
     [T.DOOR_EXT]: { s:'base', c:6,  r:8  },
     [T.CAVE]:     { s:'dungeon', c:14, r:5 },
     [T.FLOOR_W]:  { s:'indoor', c:13, r:8  },
@@ -253,7 +262,7 @@ const DIALOGS = {
     },
     sign_campus: {
         pages: [
-            { speaker: '', text: 'Welcome to HypeScale AI Campus\n"Disrupting disruption since 2024"\n\nOffice: North    Cave: South' },
+            { speaker: '', text: 'Welcome to HypeScale AI Campus\n"Disrupting disruption since 2024"\n\nOffice: North    Cave: Southwest' },
         ],
     },
 };

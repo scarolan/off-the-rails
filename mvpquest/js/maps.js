@@ -158,9 +158,9 @@ function buildCampus() {
         setTile(objects, W, x, 0, T.PINE_TOP);
         setTile(objects, W, x, 1, T.PINE);
     }
-    // Bottom border: canopy at H-2, trunk at H-1 (skip path/entrance cols 14-16)
+    // Bottom border: canopy at H-2, trunk at H-1 (skip cols 2-5 for cave entrance)
     for (let x = 0; x < W; x++) {
-        if (x >= 14 && x <= 16) continue; // leave gap for path + cave entrance
+        if (x >= 2 && x <= 5) continue; // leave gap for path + cave entrance
         setTile(objects, W, x, H-2, T.PINE_TOP);
         setTile(objects, W, x, H-1, T.PINE);
     }
@@ -189,7 +189,7 @@ function buildCampus() {
     // Scattered trees — two-tile-tall (canopy at y, trunk at y+1)
     const treeTops = [[3,7],[4,7],[2,9],[8,3],[9,3],[15,3],[16,3],
                       [25,2],[26,2],[7,14],[8,14],[23,14],[24,14],
-                      [3,17],[4,17],[12,19],[27,7]];
+                      [3,17],[4,17],[27,7]];
     for (const [tx,ty] of treeTops) {
         setTile(objects, W, tx, ty, T.TREE_TOP);
         setTile(objects, W, tx, ty + 1, T.TREE);
@@ -223,20 +223,21 @@ function buildCampus() {
     // Door on south face
     setTile(objects, W, 8, 12, T.DOOR_EXT);
 
-    // ── Cave Entrance (lower area)
-    setTile(objects, W, 14, 22, T.CAVE);
-    setTile(objects, W, 15, 22, T.CAVE);
+    // ── Cave Entrance (southwest area)
+    setTile(objects, W, 3, 22, T.CAVE);
+    setTile(objects, W, 4, 22, T.CAVE);
 
     // Path tiles (ground layer) from entrance to office
-    for (let y = 11; y <= 23; y++) setTile(ground, W, 15, y, T.PATH);
+    for (let y = 11; y <= 20; y++) setTile(ground, W, 15, y, T.PATH);
     for (let x = 15; x <= 21; x++) setTile(ground, W, x, 11, T.PATH);
     setTile(ground, W, 21, 10, T.PATH);
     setTile(ground, W, 22, 10, T.PATH);
     // Path to server room
     for (let y = 11; y <= 19; y++) setTile(ground, W, 24, y, T.PATH);
-    // Path to cave
-    for (let x = 14; x <= 15; x++) setTile(ground, W, x, 22, T.PATH);
-    for (let y = 21; y <= 22; y++) setTile(ground, W, 15, y, T.PATH);
+    // Path to cave (southwest)
+    for (let x = 4; x <= 15; x++) setTile(ground, W, x, 20, T.PATH);
+    for (let y = 20; y <= 22; y++) setTile(ground, W, 4, y, T.PATH);
+    setTile(ground, W, 3, 22, T.PATH);
     // Path to shrine
     for (let x = 8; x <= 15; x++) setTile(ground, W, x, 12, T.PATH);
 
@@ -250,8 +251,8 @@ function buildCampus() {
             { x: 22, y: 10, target: 'office', tx: 10, ty: 13 },
             { x: 24, y: 19, target: 'server', tx: 5, ty: 8 },
             { x: 8,  y: 12, target: 'shrine', tx: 4, ty: 5 },
-            { x: 14, y: 22, target: 'dungeon', tx: 1, ty: 1 },
-            { x: 15, y: 22, target: 'dungeon', tx: 2, ty: 1 },
+            { x: 3,  y: 22, target: 'dungeon', tx: 1, ty: 1 },
+            { x: 4,  y: 22, target: 'dungeon', tx: 2, ty: 1 },
         ],
         npcs: [
             { id: 'merlin',   x: 12, y: 12, def: NPC_DEFS.merlin },
@@ -442,8 +443,8 @@ function buildDungeon() {
         ground, objects,
         playerStart: { x: 1, y: 1 },
         transitions: [
-            { x: 1, y: 0, target: 'campus', tx: 14, ty: 21 },
-            { x: 2, y: 0, target: 'campus', tx: 15, ty: 21 },
+            { x: 1, y: 0, target: 'campus', tx: 3, ty: 21 },
+            { x: 2, y: 0, target: 'campus', tx: 4, ty: 21 },
         ],
         npcs: [
             { id: 'boss', x: 5, y: 15, def: NPC_DEFS.boss },
