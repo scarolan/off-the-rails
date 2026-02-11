@@ -78,7 +78,7 @@ const Maps = {
             Entities.player.y = targetY;
             Entities.loadMapEntities(targetMap);
             // Play appropriate music
-            const musicMap = { campus: 'town', office: 'office', server: 'dungeon', dungeon: 'dungeon' };
+            const musicMap = { campus: 'town', office: 'office', server: 'dungeon', dungeon: 'dungeon', shrine: 'dungeon' };
             GameAudio.playMusic(musicMap[targetMap] || 'town');
         };
     },
@@ -218,6 +218,11 @@ function buildCampus() {
     // Door on south face
     setTile(objects, W, 24, 19, T.DOOR_EXT);
 
+    // ── Oracle's Shrine (left area: cols 7-9, rows 10-12)
+    buildWallBox(objects, W, 7, 10, 3, 3, { t: T.WALL_T, f: T.WALL_F });
+    // Door on south face
+    setTile(objects, W, 8, 12, T.DOOR_EXT);
+
     // ── Cave Entrance (lower area)
     setTile(objects, W, 14, 22, T.CAVE);
     setTile(objects, W, 15, 22, T.CAVE);
@@ -232,6 +237,8 @@ function buildCampus() {
     // Path to cave
     for (let x = 14; x <= 15; x++) setTile(ground, W, x, 22, T.PATH);
     for (let y = 21; y <= 22; y++) setTile(ground, W, 15, y, T.PATH);
+    // Path to shrine
+    for (let x = 8; x <= 15; x++) setTile(ground, W, x, 12, T.PATH);
 
     return {
         name: 'HypeScale AI Campus',
@@ -242,6 +249,7 @@ function buildCampus() {
             { x: 21, y: 10, target: 'office', tx: 9, ty: 13 },
             { x: 22, y: 10, target: 'office', tx: 10, ty: 13 },
             { x: 24, y: 19, target: 'server', tx: 5, ty: 8 },
+            { x: 8,  y: 12, target: 'shrine', tx: 4, ty: 5 },
             { x: 14, y: 22, target: 'dungeon', tx: 1, ty: 1 },
             { x: 15, y: 22, target: 'dungeon', tx: 2, ty: 1 },
         ],
@@ -324,7 +332,6 @@ function buildOffice() {
         npcs: [
             { id: 'karen',  x: 15, y: 3,  def: NPC_DEFS.karen },
             { id: 'priya',  x: 3,  y: 9,  def: NPC_DEFS.priya },
-            { id: 'oracle', x: 12, y: 10, def: NPC_DEFS.oracle },
         ],
         items: [
             { id: 'yaml_scroll', x: 5, y: 4, dialog: 'yaml_pickup' },
@@ -451,10 +458,56 @@ function buildDungeon() {
     };
 }
 
+// ── Oracle's Shrine (9x7) ────────────────────────────────────
+function buildShrine() {
+    const W = 9, H = 7;
+    const ground = fillArray(W * H, T.FLOOR_W);
+    const objects = fillArray(W * H, T.NONE);
+
+    // Outer walls
+    buildWallBox(objects, W, 0, 0, W, H, {
+        t: T.WALL_I_T, f: T.WALL_I_F,
+        tl: T.WALL_I_TL, tr: T.WALL_I_TR,
+        bl: T.WALL_I_BL, br: T.WALL_I_BR,
+        l: T.WALL_I_L, r: T.WALL_I_R, b: T.WALL_I_B,
+    });
+
+    // Pedestal behind the Oracle
+    setTile(objects, W, 4, 2, T.PEDESTAL);
+
+    // Pillars flanking the room
+    setTile(objects, W, 2, 2, T.PILLAR);
+    setTile(objects, W, 6, 2, T.PILLAR);
+
+    // Candle-like decor (plants) along the walls
+    setTile(objects, W, 1, 1, T.PLANT_I);
+    setTile(objects, W, 7, 1, T.PLANT_I);
+    setTile(objects, W, 1, 5, T.PLANT_I);
+    setTile(objects, W, 7, 5, T.PLANT_I);
+
+    // Door back to campus (south wall center)
+    setTile(objects, W, 4, H - 1, T.DOOR_INT);
+
+    return {
+        name: 'The Oracle\'s Shrine',
+        width: W, height: H,
+        ground, objects,
+        playerStart: { x: 4, y: 5 },
+        transitions: [
+            { x: 4, y: H - 1, target: 'campus', tx: 8, ty: 13 },
+        ],
+        npcs: [
+            { id: 'oracle', x: 4, y: 3, def: NPC_DEFS.oracle },
+        ],
+        music: 'dungeon',
+    };
+}
+
 // ── Build All Maps ───────────────────────────────────────────
 const MAP_DATA = {
     campus:  buildCampus(),
     office:  buildOffice(),
     server:  buildServer(),
     dungeon: buildDungeon(),
+    shrine:  buildShrine(),
 };
