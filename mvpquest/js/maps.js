@@ -208,18 +208,33 @@ function buildCampus() {
     setTile(objects, W, 22, 17, T.ROCK);
 
     // ── Office Building (upper-right: cols 17-26, rows 4-10)
-    buildWallBox(objects, W, 17, 4, 10, 7, { t: T.WALL_T, f: T.WALL_F });
+    buildWallBox(objects, W, 17, 4, 10, 7, {
+        t: T.WALL_T, f: T.WALL_F,
+        tl: T.WALL_TL, tr: T.WALL_TR,
+        bl: T.WALL_BL, br: T.WALL_BR,
+        l: T.WALL_L, r: T.WALL_R, b: T.WALL_B,
+    });
     // Door on south face
     setTile(objects, W, 21, 10, T.DOOR_EXT);
     setTile(objects, W, 22, 10, T.DOOR_EXT);
 
     // ── Server Room (lower-right: cols 22-27, rows 16-19)
-    buildWallBox(objects, W, 22, 16, 6, 4, { t: T.WALL_T, f: T.WALL_F });
+    buildWallBox(objects, W, 22, 16, 6, 4, {
+        t: T.WALL_T, f: T.WALL_F,
+        tl: T.WALL_TL, tr: T.WALL_TR,
+        bl: T.WALL_BL, br: T.WALL_BR,
+        l: T.WALL_L, r: T.WALL_R, b: T.WALL_B,
+    });
     // Door on south face
     setTile(objects, W, 24, 19, T.DOOR_EXT);
 
     // ── Oracle's Shrine (left area: cols 7-9, rows 10-12)
-    buildWallBox(objects, W, 7, 10, 3, 3, { t: T.WALL_T, f: T.WALL_F });
+    buildWallBox(objects, W, 7, 10, 3, 3, {
+        t: T.WALL_T, f: T.WALL_F,
+        tl: T.WALL_TL, tr: T.WALL_TR,
+        bl: T.WALL_BL, br: T.WALL_BR,
+        l: T.WALL_L, r: T.WALL_R, b: T.WALL_B,
+    });
     // Door on south face
     setTile(objects, W, 8, 12, T.DOOR_EXT);
 
