@@ -6,8 +6,13 @@ const T = {
     NONE: 0,
     // Ground
     GRASS: 1, GRASS2: 2, WATER: 3, SAND: 4, PATH: 5,
+    // Water edge tiles (ground layer, blocking)
+    WATER_TL: 60, WATER_T: 61, WATER_TR: 62,
+    WATER_L: 63, WATER_R: 64,
+    WATER_BL: 65, WATER_B: 66, WATER_BR: 67,
     // Vegetation (blocking)
     TREE: 10, PINE: 11, BUSH: 12, ROCK: 13,
+    TREE_TOP: 15, PINE_TOP: 16, // canopy tiles (blocking)
     FLOWER: 14, // non-blocking
     // Building exterior
     WALL_T: 20, WALL_F: 21, DOOR_EXT: 24, CAVE: 29,
@@ -24,11 +29,21 @@ const T = {
 const TILE_ATLAS = {
     [T.GRASS]:    { s:'base', c:5,  r:1  },
     [T.GRASS2]:   { s:'base', c:3,  r:1  },
-    [T.WATER]:    { s:'base', c:1,  r:0  },
+    [T.WATER]:    { s:'base', c:1,  r:1  },
+    [T.WATER_TL]: { s:'base', c:0,  r:0  },
+    [T.WATER_T]:  { s:'base', c:1,  r:0  },
+    [T.WATER_TR]: { s:'base', c:2,  r:0  },
+    [T.WATER_L]:  { s:'base', c:0,  r:1  },
+    [T.WATER_R]:  { s:'base', c:2,  r:1  },
+    [T.WATER_BL]: { s:'base', c:0,  r:2  },
+    [T.WATER_B]:  { s:'base', c:1,  r:2  },
+    [T.WATER_BR]: { s:'base', c:2,  r:2  },
     [T.SAND]:     { s:'base', c:5,  r:0  },
     [T.PATH]:     { s:'base', c:4,  r:1  },
     [T.TREE]:     { s:'base', c:7,  r:5  },
+    [T.TREE_TOP]: { s:'base', c:7,  r:4  },
     [T.PINE]:     { s:'base', c:9,  r:5  },
+    [T.PINE_TOP]: { s:'base', c:9,  r:4  },
     [T.BUSH]:     { s:'base', c:11, r:5  },
     [T.ROCK]:     { s:'base', c:4,  r:6  },
     [T.FLOWER]:   { s:'base', c:14, r:5  },
@@ -57,7 +72,9 @@ const TILE_ATLAS = {
 
 // Which tiles block movement
 const BLOCKING_TILES = new Set([
-    T.WATER, T.TREE, T.PINE, T.BUSH, T.ROCK,
+    T.WATER, T.TREE, T.PINE, T.BUSH, T.ROCK, T.TREE_TOP, T.PINE_TOP,
+    T.WATER_TL, T.WATER_T, T.WATER_TR, T.WATER_L, T.WATER_R,
+    T.WATER_BL, T.WATER_B, T.WATER_BR,
     T.WALL_T, T.WALL_F,
     T.WALL_I_T, T.WALL_I_F,
     T.DESK, T.CHAIR, T.TABLE, T.SHELF, T.PLANT_I, T.SCROLL_OBJ,

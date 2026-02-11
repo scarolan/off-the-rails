@@ -136,29 +136,55 @@ function buildCampus() {
     const ground = fillArray(W * H, T.GRASS);
     const objects = fillArray(W * H, T.NONE);
 
-    // Tree border
-    fillRect(objects, W, 0, 0, W, 1, T.PINE);   // top
-    fillRect(objects, W, 0, H-1, W, 1, T.PINE);  // bottom
-    for (let y = 0; y < H; y++) {                 // left + right
-        setTile(objects, W, 0, y, T.PINE);
-        setTile(objects, W, W-1, y, T.PINE);
+    // Tree border — two-tile-tall pines (canopy + trunk)
+    // Top border: canopy at row 0, trunk at row 1
+    for (let x = 0; x < W; x++) {
+        setTile(objects, W, x, 0, T.PINE_TOP);
+        setTile(objects, W, x, 1, T.PINE);
+    }
+    // Bottom border: canopy at H-2, trunk at H-1 (skip path/entrance cols 14-16)
+    for (let x = 0; x < W; x++) {
+        if (x >= 14 && x <= 16) continue; // leave gap for path + cave entrance
+        setTile(objects, W, x, H-2, T.PINE_TOP);
+        setTile(objects, W, x, H-1, T.PINE);
+    }
+    // Left + right borders: two-tile-tall pines every other row
+    for (let y = 2; y < H - 3; y += 2) {
+        setTile(objects, W, 0, y, T.PINE_TOP);
+        setTile(objects, W, 0, y + 1, T.PINE);
+        setTile(objects, W, W-1, y, T.PINE_TOP);
+        setTile(objects, W, W-1, y + 1, T.PINE);
     }
 
-    // Pond (upper-left area)
-    fillRect(ground, W, 3, 3, 3, 3, T.WATER);
+    // Pond (upper-left area) — proper shore edges
+    // Row 3 (top): TL, T, TR
+    setTile(ground, W, 3, 3, T.WATER_TL);
+    setTile(ground, W, 4, 3, T.WATER_T);
+    setTile(ground, W, 5, 3, T.WATER_TR);
+    // Row 4 (middle): L, center, R
+    setTile(ground, W, 3, 4, T.WATER_L);
+    setTile(ground, W, 4, 4, T.WATER);
+    setTile(ground, W, 5, 4, T.WATER_R);
+    // Row 5 (bottom): BL, B, BR
+    setTile(ground, W, 3, 5, T.WATER_BL);
+    setTile(ground, W, 4, 5, T.WATER_B);
+    setTile(ground, W, 5, 5, T.WATER_BR);
 
-    // Scattered trees
-    const trees = [[3,7],[4,7],[3,8],[2,10],[8,2],[9,2],[15,2],[16,2],
-                   [25,3],[26,3],[25,4],[7,15],[8,15],[23,15],[24,15],
-                   [3,18],[4,18],[3,19],[12,20],[27,7],[27,8]];
-    for (const [tx,ty] of trees) setTile(objects, W, tx, ty, T.TREE);
+    // Scattered trees — two-tile-tall (canopy at y, trunk at y+1)
+    const treeTops = [[3,7],[4,7],[2,9],[8,3],[9,3],[15,3],[16,3],
+                      [25,2],[26,2],[7,14],[8,14],[23,14],[24,14],
+                      [3,17],[4,17],[12,19],[27,7]];
+    for (const [tx,ty] of treeTops) {
+        setTile(objects, W, tx, ty, T.TREE_TOP);
+        setTile(objects, W, tx, ty + 1, T.TREE);
+    }
 
     // Bushes
     const bushes = [[6,4],[7,4],[2,13],[5,10],[20,3],[21,3],[13,18],[14,18],[20,20],[21,20]];
     for (const [bx,by] of bushes) setTile(objects, W, bx, by, T.BUSH);
 
     // Flowers (non-blocking ground decorations)
-    const flowers = [[5,6],[9,9],[11,11],[18,5],[22,8],[14,14],[8,19],[17,21]];
+    const flowers = [[5,6],[9,9],[11,11],[14,14],[8,19],[17,21]];
     for (const [fx,fy] of flowers) setTile(objects, W, fx, fy, T.FLOWER);
 
     // Rocks
