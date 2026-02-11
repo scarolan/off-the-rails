@@ -1,66 +1,63 @@
 # MVPQuest — Project Conventions
 
 ## Overview
-Browser-based Zelda-like RPG parody about AI hype culture. Vanilla JS + Canvas, zero dependencies. Deployed via GitHub Pages.
-
-## Live URL
-https://scarolan.github.io/off-the-rails/mvpquest/
+Terminal-based (Python curses) RPG parody about AI hype culture. Single-file game, zero external dependencies. Follows shellys-arcade conventions.
 
 ## File Structure
 ```
-mvpquest/
-  index.html          # Canvas, CSS, script tags
-  js/
-    data.js           # Tile defs, dialog, NPC roster, items, quests
-    sprites.js        # Spritesheet loading, drawTile()
-    engine.js         # Game loop, input, camera, state machine
-    maps.js           # Map data arrays + rendering + collision
-    entities.js       # Player, NPCs, enemies
-    dialog.js         # Dialog box, typewriter text
-    inventory.js      # Item pickup, inventory UI
-    quests.js         # Quest state, flags, HUD
-    audio.js          # OGG loading, pooled playback
-  assets/             # Kenney roguelike tile packs + audio
+mvpquest.py           # The game — all maps, dialog, NPCs, quests, engine
+mvpquest_tiles.json   # Nerd Font / ASCII tileset definitions
+test_mvpquest.py      # Test suite (pytest)
+.github/workflows/
+  shelly-label.yml    # Project board automation
 ```
 
 ## Technical Details
-- **Canvas:** 720x480, 3x scale (16px tiles render at 48px)
-- **Viewport:** 15x10 tiles
-- **Spritesheets:** Kenney roguelike packs, 16x16 tiles, 1px margin, `sx = col * 17, sy = row * 17`
-- **Movement:** Grid-based, 150ms cooldown, WASD/arrows
+- **Engine:** Python 3 + curses, single-file (~1800 lines)
+- **Terminal:** 80×24 minimum (55×20 map viewport + 23-col status panel + 3-row message bar)
+- **Movement:** Grid-based, turn-based, WASD/arrows
 - **State machine:** title | playing | dialog | inventory | ending
+- **Tile modes:** Nerd Font (default) / ASCII — toggle with T key, persisted to ~/.mvpquest_settings
+- **Tileset config:** mvpquest_tiles.json (same pattern as cyberpunk_tiles.json in shellys-arcade)
 
-## Asset Paths (from index.html)
-- Base: `assets/2D assets/Roguelike Base Pack/Spritesheet/roguelikeSheet_transparent.png`
-- Characters: `assets/2D assets/Roguelike Characters Pack/Spritesheet/roguelikeChar_transparent.png`
-- Indoor: `assets/2D assets/Roguelike Interior Pack/Tilesheets/roguelikeIndoor_transparent.png`
-- Dungeon: `assets/2D assets/Roguelike Dungeon Pack/Spritesheet/roguelikeDungeon_transparent.png`
-- City: `assets/2D assets/Roguelike City Pack/Tilemap/tilemap.png`
-
-## Spritesheet Dimensions (17px stride)
-- Base: 57 cols x 31 rows
-- Characters: 54 cols x 12 rows
-- Indoor: 27 cols x 18 rows
-- Dungeon: 29 cols x 18 rows
-- City: 37 cols x 28 rows
-
-## Tile Atlas
-See **`mvpquest/TILE_ATLAS.md`** for a complete reference of all tile coordinates — every currently-used tile, region maps for all 5 spritesheets, character layer compositing, and unused tiles available for future features. Read this file before adding or modifying tiles.
-
-## Tile Spot-Check Tool
-To visually inspect any tile from a spritesheet, use the CLI tool:
+## Running
 ```bash
-# Single tile — see what's at base sheet (col, row)
-python3 mvpquest/tools/tile_check.py base 13 21
-
-# Region — show a block of tiles with labeled grid
-python3 mvpquest/tools/tile_check.py base 13 21 --region 7x3
+python3 mvpquest.py
 ```
-Output goes to `/tmp/tile_*.png` — use the Read tool to view it. Sheets: `base`, `indoor`, `dungeon`, `city`, `chars`.
+
+## Controls
+- WASD / Arrows: Move
+- SPACE: Talk to NPC / advance dialog
+- I: Inventory
+- T: Toggle Nerd Font / ASCII tiles
+- Q: Quit
 
 ## Testing
-Open `mvpquest/index.html` in browser. No build step required.
+```bash
+python3 -m pytest test_mvpquest.py -v
+```
+
+## Maps
+1. **Campus** (30×25) — main overworld with buildings, pond, forest borders
+2. **Office** (20×15) — Karen's office, conference room, main work area
+3. **Server Room** (12×10) — server racks, Steve the sysadmin
+4. **Dungeon** (25×20) — The Legacy Codebase, enemy patrols, GPT-7 boss
+5. **Shrine** (9×7) — The Oracle (GPT-7)
+
+## NPCs
+Merlin (M/magenta), DataDave (D/blue), Karen (K/red), Priya (P/yellow), Oracle (O/cyan), Steve (S/white), GPT-7 Boss (G/red)
+
+## Quest Chain
+1. Welcome to HypeScale → talk to Karen
+2. Get YAML Config Scroll → conference room
+3. Get API Key of Power → convince Steve (need JIRA ticket from Priya)
+4. Get Sacred .env File → defeat GPT-7 in dungeon
+5. Ship the MVP! → return to Karen → ending sequence
 
 ## Git Conventions
 - One commit per phase/issue
 - Issues labeled `enhancement` (NOT `shelly` — added via project board later)
+
+## Shelly automation pipeline
+Same as shellys-arcade — issues labeled `shelly` flow through the automated pipeline.
+See `.github/workflows/shelly-label.yml` for project board sync.
