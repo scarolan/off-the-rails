@@ -10,22 +10,22 @@ const GameAudio = {
     sfxVolume: 0.5,
 
     SOUND_DEFS: {
-        footstep:  'assets/Audio/RPG Audio/Audio/footstep00.ogg',
-        footstep2: 'assets/Audio/RPG Audio/Audio/footstep01.ogg',
-        door:      'assets/Audio/RPG Audio/Audio/doorOpen_1.ogg',
-        item:      'assets/Audio/RPG Audio/Audio/handleCoins.ogg',
-        talk:      'assets/Audio/RPG Audio/Audio/bookFlip1.ogg',
-        quest:     'assets/Audio/RPG Audio/Audio/metalClick.ogg',
-        error:     'assets/Audio/RPG Audio/Audio/doorClose_4.ogg',
+        footstep:  'assets/Audio/RPG%20Audio/Audio/footstep00.ogg',
+        footstep2: 'assets/Audio/RPG%20Audio/Audio/footstep01.ogg',
+        door:      'assets/Audio/RPG%20Audio/Audio/doorOpen_1.ogg',
+        item:      'assets/Audio/RPG%20Audio/Audio/handleCoins.ogg',
+        talk:      'assets/Audio/RPG%20Audio/Audio/bookFlip1.ogg',
+        quest:     'assets/Audio/RPG%20Audio/Audio/metalClick.ogg',
+        error:     'assets/Audio/RPG%20Audio/Audio/doorClose_4.ogg',
     },
 
     MUSIC_DEFS: {
-        town:    'assets/Audio/Music Loops/Loops/Farm Frolics.ogg',
-        office:  'assets/Audio/Music Loops/Loops/Wacky Waiting.ogg',
-        dungeon: 'assets/Audio/Music Loops/Retro/Retro Mystic.ogg',
-        boss:    'assets/Audio/Music Loops/Loops/Infinite Descent.ogg',
-        title:   'assets/Audio/Music Loops/Retro/Retro Comedy.ogg',
-        ending:  'assets/Audio/Music Loops/Loops/Sad Town.ogg',
+        town:    'assets/Audio/Music%20Loops/Loops/Farm%20Frolics.ogg',
+        office:  'assets/Audio/Music%20Loops/Loops/Wacky%20Waiting.ogg',
+        dungeon: 'assets/Audio/Music%20Loops/Retro/Retro%20Mystic.ogg',
+        boss:    'assets/Audio/Music%20Loops/Loops/Infinite%20Descent.ogg',
+        title:   'assets/Audio/Music%20Loops/Retro/Retro%20Comedy.ogg',
+        ending:  'assets/Audio/Music%20Loops/Loops/Sad%20Town.ogg',
     },
 
     load(callback) {

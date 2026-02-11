@@ -7,11 +7,11 @@ const Sprites = {
 
     load(callback) {
         const defs = {
-            base:    'assets/2D assets/Roguelike Base Pack/Spritesheet/roguelikeSheet_transparent.png',
-            chars:   'assets/2D assets/Roguelike Characters Pack/Spritesheet/roguelikeChar_transparent.png',
-            indoor:  'assets/2D assets/Roguelike Interior Pack/Tilesheets/roguelikeIndoor_transparent.png',
-            dungeon: 'assets/2D assets/Roguelike Dungeon Pack/Spritesheet/roguelikeDungeon_transparent.png',
-            city:    'assets/2D assets/Roguelike City Pack/Tilemap/tilemap.png',
+            base:    'assets/2D%20assets/Roguelike%20Base%20Pack/Spritesheet/roguelikeSheet_transparent.png',
+            chars:   'assets/2D%20assets/Roguelike%20Characters%20Pack/Spritesheet/roguelikeChar_transparent.png',
+            indoor:  'assets/2D%20assets/Roguelike%20Interior%20Pack/Tilesheets/roguelikeIndoor_transparent.png',
+            dungeon: 'assets/2D%20assets/Roguelike%20Dungeon%20Pack/Spritesheet/roguelikeDungeon_transparent.png',
+            city:    'assets/2D%20assets/Roguelike%20City%20Pack/Tilemap/tilemap.png',
         };
         const keys = Object.keys(defs);
         let count = 0;
