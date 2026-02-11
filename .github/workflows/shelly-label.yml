@@ -15,7 +15,7 @@ jobs:
           script: |
             const query = `query {
               user(login: "scarolan") {
-                projectV2(number: 3) {
+                projectV2(number: 4) {
                   items(first: 50) {
                     nodes {
                       fieldValueByName(name: "Status") {
