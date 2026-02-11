@@ -44,6 +44,20 @@ mvpquest/
 - Dungeon: 29 cols x 18 rows
 - City: 37 cols x 28 rows
 
+## Tile Atlas
+See **`mvpquest/TILE_ATLAS.md`** for a complete reference of all tile coordinates — every currently-used tile, region maps for all 5 spritesheets, character layer compositing, and unused tiles available for future features. Read this file before adding or modifying tiles.
+
+## Tile Spot-Check Tool
+To visually inspect any tile from a spritesheet, use the CLI tool:
+```bash
+# Single tile — see what's at base sheet (col, row)
+python3 mvpquest/tools/tile_check.py base 13 21
+
+# Region — show a block of tiles with labeled grid
+python3 mvpquest/tools/tile_check.py base 13 21 --region 7x3
+```
+Output goes to `/tmp/tile_*.png` — use the Read tool to view it. Sheets: `base`, `indoor`, `dungeon`, `city`, `chars`.
+
 ## Testing
 Open `mvpquest/index.html` in browser. No build step required.
 

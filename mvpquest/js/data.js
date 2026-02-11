@@ -18,6 +18,19 @@ const T = {
     WALL_T: 20, WALL_F: 21, DOOR_EXT: 24, CAVE: 29,
     WALL_TL: 90, WALL_TR: 91, WALL_L: 92, WALL_R: 93,
     WALL_BL: 94, WALL_B: 95, WALL_BR: 96,
+    // Building exterior - Beige style (office, shrine)
+    BLDG_B_PEAK_L: 100, BLDG_B_PEAK_R: 101,
+    BLDG_B_ROOF: 102,
+    BLDG_B_WALL_L: 103, BLDG_B_WALL_R: 104, BLDG_B_WALL: 105,
+    BLDG_B_WIN_L: 106, BLDG_B_WIN_R: 107,
+    BLDG_B_FACE_L: 108, BLDG_B_FACE_R: 109, BLDG_B_FACE: 110,
+    BLDG_B_DOOR_L: 111, BLDG_B_DOOR_R: 112,
+    // Building exterior - Brown style (server room)
+    BLDG_W_PEAK_L: 113, BLDG_W_PEAK_R: 114,
+    BLDG_W_ROOF: 115,
+    BLDG_W_WALL_L: 116, BLDG_W_WALL_R: 117, BLDG_W_WALL: 118,
+    BLDG_W_FACE_L: 119, BLDG_W_FACE_R: 120, BLDG_W_FACE: 121,
+    BLDG_W_DOOR: 122,
     // Indoor
     FLOOR_W: 30, WALL_I_T: 33, WALL_I_F: 34, DOOR_INT: 35,
     WALL_I_TL: 70, WALL_I_TR: 71,
@@ -97,6 +110,31 @@ const TILE_ATLAS = {
     [T.RACK]:     { s:'dungeon', c:0,  r:5  },
     [T.TERMINAL]: { s:'dungeon', c:2,  r:5  },
     [T.PEDESTAL]: { s:'dungeon', c:8,  r:12 },
+    // Beige building (base pack rows 21-23)
+    [T.BLDG_B_PEAK_L]:{ s:'base', c:13, r:21 },
+    [T.BLDG_B_PEAK_R]:{ s:'base', c:14, r:21 },
+    [T.BLDG_B_ROOF]:  { s:'base', c:18, r:21 },
+    [T.BLDG_B_WALL_L]:{ s:'base', c:13, r:22 },
+    [T.BLDG_B_WALL_R]:{ s:'base', c:14, r:22 },
+    [T.BLDG_B_WALL]:  { s:'base', c:18, r:22 },
+    [T.BLDG_B_WIN_L]: { s:'base', c:15, r:22 },
+    [T.BLDG_B_WIN_R]: { s:'base', c:16, r:22 },
+    [T.BLDG_B_FACE_L]:{ s:'base', c:13, r:23 },
+    [T.BLDG_B_FACE_R]:{ s:'base', c:14, r:23 },
+    [T.BLDG_B_FACE]:  { s:'base', c:18, r:23 },
+    [T.BLDG_B_DOOR_L]:{ s:'base', c:15, r:23 },
+    [T.BLDG_B_DOOR_R]:{ s:'base', c:16, r:23 },
+    // Brown building (base pack rows 21-23)
+    [T.BLDG_W_PEAK_L]:{ s:'base', c:20, r:21 },
+    [T.BLDG_W_PEAK_R]:{ s:'base', c:21, r:21 },
+    [T.BLDG_W_ROOF]:  { s:'base', c:25, r:21 },
+    [T.BLDG_W_WALL_L]:{ s:'base', c:20, r:22 },
+    [T.BLDG_W_WALL_R]:{ s:'base', c:21, r:22 },
+    [T.BLDG_W_WALL]:  { s:'base', c:25, r:22 },
+    [T.BLDG_W_FACE_L]:{ s:'base', c:20, r:23 },
+    [T.BLDG_W_FACE_R]:{ s:'base', c:21, r:23 },
+    [T.BLDG_W_FACE]:  { s:'base', c:25, r:23 },
+    [T.BLDG_W_DOOR]:  { s:'base', c:22, r:22 },
 };
 
 // Which tiles block movement
@@ -115,6 +153,13 @@ const BLOCKING_TILES = new Set([
     T.STONE_W_TL, T.STONE_W_TR, T.STONE_W_L, T.STONE_W_R,
     T.STONE_W_BL, T.STONE_W_B, T.STONE_W_BR,
     T.PILLAR, T.RACK, T.TERMINAL, T.PEDESTAL,
+    T.BLDG_B_PEAK_L, T.BLDG_B_PEAK_R, T.BLDG_B_ROOF,
+    T.BLDG_B_WALL_L, T.BLDG_B_WALL_R, T.BLDG_B_WALL,
+    T.BLDG_B_WIN_L, T.BLDG_B_WIN_R,
+    T.BLDG_B_FACE_L, T.BLDG_B_FACE_R, T.BLDG_B_FACE,
+    T.BLDG_W_PEAK_L, T.BLDG_W_PEAK_R, T.BLDG_W_ROOF,
+    T.BLDG_W_WALL_L, T.BLDG_W_WALL_R, T.BLDG_W_WALL,
+    T.BLDG_W_FACE_L, T.BLDG_W_FACE_R, T.BLDG_W_FACE,
 ]);
 
 // NPC character sprite definitions — layered compositing from Kenney character pack

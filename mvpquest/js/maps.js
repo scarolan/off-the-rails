@@ -146,100 +146,250 @@ function buildWallBox(obj, w, x, y, bw, bh, tiles) {
     for (let dy = 1; dy < bh - 1; dy++) setTile(obj, w, x + bw - 1, y + dy, r);
 }
 
+function buildBuilding(obj, w, x, y, bw, style) {
+    // style: 'beige' or 'brown'
+    const B = style === 'brown' ? 'W' : 'B';
+    const t = (name) => T[`BLDG_${B}_${name}`];
+
+    // Row 0: peaked roof
+    setTile(obj, w, x, y, t('PEAK_L'));
+    for (let dx = 1; dx < bw - 1; dx++) setTile(obj, w, x + dx, y, t('ROOF'));
+    setTile(obj, w, x + bw - 1, y, t('PEAK_R'));
+
+    // Row 1: walls
+    setTile(obj, w, x, y + 1, t('WALL_L'));
+    for (let dx = 1; dx < bw - 1; dx++) setTile(obj, w, x + dx, y + 1, t('WALL'));
+    setTile(obj, w, x + bw - 1, y + 1, t('WALL_R'));
+
+    // Row 2: face (door placed separately by caller)
+    setTile(obj, w, x, y + 2, t('FACE_L'));
+    for (let dx = 1; dx < bw - 1; dx++) setTile(obj, w, x + dx, y + 2, t('FACE'));
+    setTile(obj, w, x + bw - 1, y + 2, t('FACE_R'));
+}
+
 // ── Campus Map (30x25) ───────────────────────────────────────
 function buildCampus() {
     const W = 30, H = 25;
     const ground = fillArray(W * H, T.GRASS);
     const objects = fillArray(W * H, T.NONE);
 
-    // Tree border — two-tile-tall pines (canopy + trunk)
-    // Top border: canopy at row 0, trunk at row 1
-    for (let x = 0; x < W; x++) {
-        setTile(objects, W, x, 0, T.PINE_TOP);
-        setTile(objects, W, x, 1, T.PINE);
-    }
-    // Bottom border: canopy at H-2, trunk at H-1 (skip cols 3-4 for cave entrance)
-    for (let x = 0; x < W; x++) {
-        if (x >= 3 && x <= 4) continue; // leave gap for cave entrance
-        setTile(objects, W, x, H-2, T.PINE_TOP);
-        setTile(objects, W, x, H-1, T.PINE);
-    }
-    // Left + right borders: two-tile-tall pines every other row
-    for (let y = 2; y < H - 3; y += 2) {
-        setTile(objects, W, 0, y, T.PINE_TOP);
-        setTile(objects, W, 0, y + 1, T.PINE);
-        setTile(objects, W, W-1, y, T.PINE_TOP);
-        setTile(objects, W, W-1, y + 1, T.PINE);
-    }
-    // Close side gaps at row 22 (trunk only — canopy would overlap row 20-21 pair)
-    setTile(objects, W, 0, H-3, T.PINE);    // (0, 22)
-    setTile(objects, W, W-1, H-3, T.PINE);  // (29, 22)
+    // ── Ground variety: deterministic GRASS2 scatter (~18%) ──
+    // Skip tiles under buildings, paths, and the pond
+    const skipGrass = new Set();
+    // Pond area (cols 3-5, rows 3-5)
+    for (let sy = 3; sy <= 5; sy++)
+        for (let sx = 3; sx <= 5; sx++) skipGrass.add(sy * W + sx);
+    // Path tiles — vertical main (x=15, y=11-20)
+    for (let sy = 11; sy <= 20; sy++) skipGrass.add(sy * W + 15);
+    // Path to office (x=15-22, y=11) and door tiles
+    for (let sx = 15; sx <= 22; sx++) skipGrass.add(11 * W + sx);
+    skipGrass.add(10 * W + 21); skipGrass.add(10 * W + 22);
+    // Path to server room (x=24, y=11-19)
+    for (let sy = 11; sy <= 19; sy++) skipGrass.add(sy * W + 24);
+    // Path to cave (x=4-15, y=20) + (x=4, y=20-22) + (x=3, y=22)
+    for (let sx = 4; sx <= 15; sx++) skipGrass.add(20 * W + sx);
+    for (let sy = 20; sy <= 22; sy++) skipGrass.add(sy * W + 4);
+    skipGrass.add(22 * W + 3);
+    // Path to shrine (x=8-15, y=12)
+    for (let sx = 8; sx <= 15; sx++) skipGrass.add(12 * W + sx);
+    // Office building (cols 19-24, rows 8-10)
+    for (let sy = 8; sy <= 10; sy++)
+        for (let sx = 19; sx <= 24; sx++) skipGrass.add(sy * W + sx);
+    // Server room (cols 22-25, rows 17-19)
+    for (let sy = 17; sy <= 19; sy++)
+        for (let sx = 22; sx <= 25; sx++) skipGrass.add(sy * W + sx);
+    // Shrine (cols 7-9, rows 10-12)
+    for (let sy = 10; sy <= 12; sy++)
+        for (let sx = 7; sx <= 9; sx++) skipGrass.add(sy * W + sx);
 
-    // Pond (upper-left area) — proper shore edges
-    // Row 3 (top): TL, T, TR
+    for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+            if (skipGrass.has(y * W + x)) continue;
+            if ((x * 7 + y * 13) % 100 < 18) {
+                setTile(ground, W, x, y, T.GRASS2);
+            }
+        }
+    }
+
+    // ── Forest borders (2-3 trees deep, mixed pine/deciduous) ──
+
+    // Helper: place a two-tile tree pair (canopy + trunk) on objects layer
+    function placeTree(tx, ty, pine) {
+        setTile(objects, W, tx, ty, pine ? T.PINE_TOP : T.TREE_TOP);
+        setTile(objects, W, tx, ty + 1, pine ? T.PINE : T.TREE);
+    }
+
+    // Top border: 3 rows of trees (canopy rows 0,2; trunk rows 1,3)
+    // Row 0-1: full pine row
+    for (let x = 0; x < W; x++) placeTree(x, 0, true);
+    // Row 2-3: mix pine and deciduous, leave gaps for things underneath
+    for (let x = 0; x < W; x++) {
+        // Skip cols that would overlap pond (cols 3-5 at row 3) or NPC clearance
+        if (x >= 3 && x <= 5) continue; // pond area
+        if (x === 6) continue; // DataDave (6,5) clearance — row 3-4 tree would block above him
+        placeTree(x, 2, (x % 3 !== 0)); // every 3rd is deciduous for variety
+    }
+
+    // Bottom border: rows 21-24 (canopy at 21,23; trunk at 22,24)
+    // Row 23-24: dense pines along bottom
+    for (let x = 0; x < W; x++) {
+        if (x >= 3 && x <= 4) continue; // cave entrance gap
+        if (x === 15) continue; // player spawn clearance (15,23)
+        placeTree(x, 23, true);
+    }
+    // Row 21-22: second row of trees, skip cave path and spawn path
+    for (let x = 0; x < W; x++) {
+        if (x >= 3 && x <= 5) continue; // cave path area (x=4, y=20-22)
+        if (x === 15) continue; // main path at (15,20) area
+        if (x >= 13 && x <= 14) continue; // clearance near main path
+        if (x >= 22 && x <= 25) continue; // server room building
+        placeTree(x, 21, (x % 4 !== 0)); // every 4th deciduous
+    }
+
+    // Left border: cols 0-2, rows 2 to 20 (two-tile pairs)
+    // Col 0: dense pines
+    for (let y = 2; y < 20; y += 2) {
+        if (y >= 10 && y <= 13) continue; // shrine access gap (shrine at cols 7-9 rows 10-12)
+        placeTree(0, y, true);
+    }
+    // Col 1: mix trees
+    for (let y = 2; y < 20; y += 2) {
+        if (y >= 10 && y <= 13) continue; // shrine area clearance
+        placeTree(1, y, (y % 4 !== 0));
+    }
+    // Col 2: sparse trees to transition to open campus
+    for (let y = 2; y < 18; y += 3) {
+        if (y >= 8 && y <= 13) continue; // shrine area + path clearance
+        if (y >= 3 && y <= 5) continue; // pond clearance
+        placeTree(2, y, (y % 6 === 0));
+    }
+
+    // Right border: cols 27-29, rows 2 to 20
+    // Col 29: dense pines
+    for (let y = 2; y < 20; y += 2) {
+        if (y === 10 || y === 11) continue; // east-west path exit at row 11
+        placeTree(29, y, true);
+    }
+    // Col 28: mix trees
+    for (let y = 2; y < 20; y += 2) {
+        if (y >= 10 && y <= 12) continue; // path gap at row 11
+        placeTree(28, y, (y % 4 !== 0));
+    }
+    // Col 27: sparse transition
+    for (let y = 2; y < 18; y += 3) {
+        if (y >= 8 && y <= 12) continue; // path gap + office clearance
+        if (y >= 14 && y <= 16) continue; // clearance near server path area
+        placeTree(27, y, (y % 6 === 0));
+    }
+
+    // ── Pond (upper-left area) — proper shore edges ──
     setTile(ground, W, 3, 3, T.WATER_TL);
     setTile(ground, W, 4, 3, T.WATER_T);
     setTile(ground, W, 5, 3, T.WATER_TR);
-    // Row 4 (middle): L, center, R
     setTile(ground, W, 3, 4, T.WATER_L);
     setTile(ground, W, 4, 4, T.WATER);
     setTile(ground, W, 5, 4, T.WATER_R);
-    // Row 5 (bottom): BL, B, BR
     setTile(ground, W, 3, 5, T.WATER_BL);
     setTile(ground, W, 4, 5, T.WATER_B);
     setTile(ground, W, 5, 5, T.WATER_BR);
 
-    // Scattered trees — two-tile-tall (canopy at y, trunk at y+1)
-    const treeTops = [[3,7],[4,7],[2,9],[8,3],[9,3],[15,3],[16,3],
-                      [25,2],[26,2],[7,14],[8,14],[23,14],[24,14],
-                      [3,17],[4,17],[27,7]];
-    for (const [tx,ty] of treeTops) {
-        setTile(objects, W, tx, ty, T.TREE_TOP);
-        setTile(objects, W, tx, ty + 1, T.TREE);
-    }
+    // ── Tree groves (groups of 3-5, 1-tile clearance from doors/NPCs/paths) ──
+    // Grove 1: northwest, near pond (deciduous)
+    placeTree(3, 7, false);
+    placeTree(4, 7, false);
+    placeTree(5, 7, false);
 
-    // Bushes
-    const bushes = [[6,4],[7,4],[2,13],[5,10],[20,3],[21,3],[13,18],[14,18],[20,20],[21,20]];
-    for (const [bx,by] of bushes) setTile(objects, W, bx, by, T.BUSH);
+    // Grove 2: north-center (pine cluster)
+    placeTree(8, 3, true);
+    placeTree(9, 3, true);
+    placeTree(10, 3, true);
 
-    // Flowers (non-blocking ground decorations)
-    const flowers = [[5,6],[9,9],[11,11],[14,14],[8,19],[17,21]];
+    // Grove 3: north-center-right (mixed)
+    placeTree(15, 3, false);
+    placeTree(16, 3, true);
+    placeTree(17, 3, false);
+
+    // Grove 4: northeast (deciduous cluster)
+    placeTree(24, 2, false);
+    placeTree(25, 2, false);
+    placeTree(26, 2, true);
+
+    // Grove 5: mid-left below shrine (mixed)
+    placeTree(3, 14, false);
+    placeTree(4, 14, true);
+    placeTree(5, 14, false);
+
+    // Grove 6: mid-right below office (pine)
+    placeTree(23, 13, true);
+    placeTree(24, 13, true);
+    placeTree(25, 13, false);
+
+    // Grove 7: southwest near cave path (deciduous)
+    placeTree(7, 17, false);
+    placeTree(8, 17, false);
+    placeTree(9, 17, true);
+
+    // Grove 8: south-center (pine)
+    placeTree(17, 17, true);
+    placeTree(18, 17, true);
+    placeTree(19, 17, false);
+
+    // Grove 9: mid-west (deciduous pair near left border transition)
+    placeTree(3, 10, false);
+    placeTree(4, 10, false);
+
+    // ── Bushes (purposeful groupings near buildings/entrances) ──
+    // Flanking office entrance
+    setTile(objects, W, 20, 10, T.BUSH);
+    setTile(objects, W, 23, 10, T.BUSH);
+    // Near office north side
+    setTile(objects, W, 19, 7, T.BUSH);
+    setTile(objects, W, 20, 7, T.BUSH);
+    // Flanking shrine entrance
+    setTile(objects, W, 7, 13, T.BUSH);
+    setTile(objects, W, 9, 13, T.BUSH);
+    // Near server room
+    setTile(objects, W, 22, 16, T.BUSH);
+    setTile(objects, W, 25, 16, T.BUSH);
+    // Framing open area near pond
+    setTile(objects, W, 6, 3, T.BUSH);
+    setTile(objects, W, 7, 3, T.BUSH);
+    // Along cave path
+    setTile(objects, W, 6, 19, T.BUSH);
+    setTile(objects, W, 7, 19, T.BUSH);
+    // Near main path middle
+    setTile(objects, W, 13, 16, T.BUSH);
+    setTile(objects, W, 16, 16, T.BUSH);
+
+    // ── Flowers (~18 scattered in clearings and along paths) ──
+    const flowers = [
+        [5,6],[9,9],[11,11],[14,14],[8,19],[17,21],  // original 6
+        [6,6],[11,7],[13,9],[16,15],[10,16],[18,14],  // near clearings
+        [12,19],[19,13],[3,12],[20,5],[14,7],[7,8],   // along paths/edges
+    ];
     for (const [fx,fy] of flowers) setTile(objects, W, fx, fy, T.FLOWER);
 
-    // Rocks
-    setTile(objects, W, 10, 6, T.ROCK);
-    setTile(objects, W, 22, 17, T.ROCK);
+    // ── Rocks (4-5 scattered near groves and pond) ──
+    setTile(objects, W, 10, 6, T.ROCK);   // original
+    setTile(objects, W, 6, 5, T.ROCK);    // near pond
+    setTile(objects, W, 2, 16, T.ROCK);   // near left border
+    setTile(objects, W, 21, 15, T.ROCK);  // near server room area
+    setTile(objects, W, 12, 8, T.ROCK);   // mid-campus
 
-    // ── Office Building (upper-right: cols 17-26, rows 4-10)
-    buildWallBox(objects, W, 17, 4, 10, 7, {
-        t: T.WALL_T, f: T.WALL_F,
-        tl: T.WALL_TL, tr: T.WALL_TR,
-        bl: T.WALL_BL, br: T.WALL_BR,
-        l: T.WALL_L, r: T.WALL_R, b: T.WALL_B,
-    });
-    // Door on south face
-    setTile(objects, W, 21, 10, T.DOOR_EXT);
-    setTile(objects, W, 22, 10, T.DOOR_EXT);
+    // ── Office Building (beige, cols 19-24, rows 8-10)
+    buildBuilding(objects, W, 19, 8, 6, 'beige');
+    setTile(objects, W, 21, 9, T.BLDG_B_WIN_L);  // window in wall row
+    setTile(objects, W, 22, 9, T.BLDG_B_WIN_R);
+    setTile(objects, W, 21, 10, T.BLDG_B_DOOR_L); // door in face row
+    setTile(objects, W, 22, 10, T.BLDG_B_DOOR_R);
 
-    // ── Server Room (lower-right: cols 22-27, rows 16-19)
-    buildWallBox(objects, W, 22, 16, 6, 4, {
-        t: T.WALL_T, f: T.WALL_F,
-        tl: T.WALL_TL, tr: T.WALL_TR,
-        bl: T.WALL_BL, br: T.WALL_BR,
-        l: T.WALL_L, r: T.WALL_R, b: T.WALL_B,
-    });
-    // Door on south face
-    setTile(objects, W, 24, 19, T.DOOR_EXT);
+    // ── Server Room (brown, cols 22-25, rows 17-19)
+    buildBuilding(objects, W, 22, 17, 4, 'brown');
+    setTile(objects, W, 24, 19, T.BLDG_W_DOOR);   // door in face row
 
-    // ── Oracle's Shrine (left area: cols 7-9, rows 10-12)
-    buildWallBox(objects, W, 7, 10, 3, 3, {
-        t: T.WALL_T, f: T.WALL_F,
-        tl: T.WALL_TL, tr: T.WALL_TR,
-        bl: T.WALL_BL, br: T.WALL_BR,
-        l: T.WALL_L, r: T.WALL_R, b: T.WALL_B,
-    });
-    // Door on south face
-    setTile(objects, W, 8, 12, T.DOOR_EXT);
+    // ── Oracle's Shrine (beige, cols 7-9, rows 10-12)
+    buildBuilding(objects, W, 7, 10, 3, 'beige');
+    setTile(objects, W, 8, 12, T.BLDG_B_DOOR_L);  // door in face row
 
     // ── Cave Entrance (southwest area)
     setTile(objects, W, 3, 22, T.CAVE);
