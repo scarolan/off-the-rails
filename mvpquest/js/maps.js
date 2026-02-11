@@ -119,15 +119,31 @@ function fillRect(arr, w, x, y, rw, rh, tile) {
             setTile(arr, w, x + dx, y + dy, tile);
 }
 
-function buildWallBox(obj, w, x, y, bw, bh, wallT, wallF) {
-    // Top wall row
-    fillRect(obj, w, x, y, bw, 1, wallT);
-    // Bottom wall row
-    fillRect(obj, w, x, y + bh - 1, bw, 1, wallF);
-    // Left wall column
-    for (let dy = 1; dy < bh - 1; dy++) setTile(obj, w, x, y + dy, wallF);
-    // Right wall column
-    for (let dy = 1; dy < bh - 1; dy++) setTile(obj, w, x + bw - 1, y + dy, wallF);
+function buildWallBox(obj, w, x, y, bw, bh, tiles) {
+    // tiles: { t, f, tl, tr, bl, br, l, r, b }
+    // Falls back to original 2-tile behavior when only t/f are given
+    const tl = tiles.tl || tiles.t;
+    const tr = tiles.tr || tiles.t;
+    const bl = tiles.bl || tiles.f;
+    const br = tiles.br || tiles.f;
+    const l  = tiles.l  || tiles.f;
+    const r  = tiles.r  || tiles.f;
+    const b  = tiles.b  || tiles.f;
+
+    // Corners
+    setTile(obj, w, x, y, tl);
+    setTile(obj, w, x + bw - 1, y, tr);
+    setTile(obj, w, x, y + bh - 1, bl);
+    setTile(obj, w, x + bw - 1, y + bh - 1, br);
+
+    // Top edge (between corners)
+    for (let dx = 1; dx < bw - 1; dx++) setTile(obj, w, x + dx, y, tiles.t);
+    // Bottom edge (between corners)
+    for (let dx = 1; dx < bw - 1; dx++) setTile(obj, w, x + dx, y + bh - 1, b);
+    // Left edge (between corners)
+    for (let dy = 1; dy < bh - 1; dy++) setTile(obj, w, x, y + dy, l);
+    // Right edge (between corners)
+    for (let dy = 1; dy < bh - 1; dy++) setTile(obj, w, x + bw - 1, y + dy, r);
 }
 
 // ── Campus Map (30x25) ───────────────────────────────────────
@@ -192,13 +208,13 @@ function buildCampus() {
     setTile(objects, W, 22, 17, T.ROCK);
 
     // ── Office Building (upper-right: cols 17-26, rows 4-10)
-    buildWallBox(objects, W, 17, 4, 10, 7, T.WALL_T, T.WALL_F);
+    buildWallBox(objects, W, 17, 4, 10, 7, { t: T.WALL_T, f: T.WALL_F });
     // Door on south face
     setTile(objects, W, 21, 10, T.DOOR_EXT);
     setTile(objects, W, 22, 10, T.DOOR_EXT);
 
     // ── Server Room (lower-right: cols 22-27, rows 16-19)
-    buildWallBox(objects, W, 22, 16, 6, 4, T.WALL_T, T.WALL_F);
+    buildWallBox(objects, W, 22, 16, 6, 4, { t: T.WALL_T, f: T.WALL_F });
     // Door on south face
     setTile(objects, W, 24, 19, T.DOOR_EXT);
 
@@ -244,19 +260,30 @@ function buildOffice() {
     const objects = fillArray(W * H, T.NONE);
 
     // Outer walls
-    buildWallBox(objects, W, 0, 0, W, H, T.WALL_I_T, T.WALL_I_F);
+    buildWallBox(objects, W, 0, 0, W, H, {
+        t: T.WALL_I_T, f: T.WALL_I_F,
+        tl: T.WALL_I_TL, tr: T.WALL_I_TR,
+        bl: T.WALL_I_BL, br: T.WALL_I_BR,
+        l: T.WALL_I_L, r: T.WALL_I_R, b: T.WALL_I_B,
+    });
 
     // ── Karen's Office (top-right room: cols 12-19, rows 0-6)
-    fillRect(objects, W, 12, 6, 8, 1, T.WALL_I_F); // divider wall
-    setTile(objects, W, 13, 6, T.DOOR_INT);          // door
+    // Horizontal divider wall at row 6 (left junction to right outer wall)
+    setTile(objects, W, 12, 6, T.WALL_I_TL);         // left T-junction uses corner
+    for (let dx = 13; dx < W - 1; dx++) setTile(objects, W, dx, 6, T.WALL_I_T);
+    setTile(objects, W, W - 1, 6, T.WALL_I_R);       // meets right outer wall
+    setTile(objects, W, 13, 6, T.DOOR_INT);           // door
     // Karen's desk
     setTile(objects, W, 16, 2, T.DESK);
     setTile(objects, W, 17, 2, T.DESK);
     setTile(objects, W, 16, 3, T.CHAIR);
 
     // ── Conference Room (top-left: cols 0-10, rows 0-6)
-    fillRect(objects, W, 10, 1, 1, 6, T.WALL_I_F); // divider wall
-    setTile(objects, W, 10, 5, T.DOOR_INT);          // door
+    // Vertical divider wall at col 10 (top outer wall down to row 6)
+    setTile(objects, W, 10, 0, T.WALL_I_T);           // meets top outer wall
+    for (let dy = 1; dy < 6; dy++) setTile(objects, W, 10, dy, T.WALL_I_R);
+    setTile(objects, W, 10, 6, T.WALL_I_BR);          // corner where dividers meet
+    setTile(objects, W, 10, 5, T.DOOR_INT);            // door
     // Conference table
     fillRect(objects, W, 3, 2, 4, 2, T.TABLE);
     // YAML Scroll on table
@@ -313,7 +340,12 @@ function buildServer() {
     const objects = fillArray(W * H, T.NONE);
 
     // Walls
-    buildWallBox(objects, W, 0, 0, W, H, T.STONE_W_T, T.STONE_W_F);
+    buildWallBox(objects, W, 0, 0, W, H, {
+        t: T.STONE_W_T, f: T.STONE_W_F,
+        tl: T.STONE_W_TL, tr: T.STONE_W_TR,
+        bl: T.STONE_W_BL, br: T.STONE_W_BR,
+        l: T.STONE_W_L, r: T.STONE_W_R, b: T.STONE_W_B,
+    });
 
     // Server racks along walls
     for (let x = 2; x <= 9; x += 2) {
