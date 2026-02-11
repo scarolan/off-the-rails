@@ -613,7 +613,7 @@ def build_campus():
         set_tile(grid, fx, fy, FLOWER)
 
     # Rocks
-    rocks = [(10, 6), (6, 5), (2, 16), (21, 15), (12, 8)]
+    rocks = [(10, 6), (6, 4), (2, 16), (21, 15), (12, 8)]
     for rx, ry in rocks:
         set_tile(grid, rx, ry, ROCK)
 
