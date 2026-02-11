@@ -119,7 +119,7 @@ const Engine = {
                 Dialog.update(dt);
                 if (this.justPressed['Space'] || this.justPressed['Enter'] || this.justPressed['KeyE']) {
                     Dialog.advance();
-                    if (!Dialog.active) {
+                    if (!Dialog.active && this.state === 'dialog') {
                         this.state = 'playing';
                     }
                 }
