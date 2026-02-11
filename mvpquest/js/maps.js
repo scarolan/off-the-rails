@@ -158,9 +158,9 @@ function buildCampus() {
         setTile(objects, W, x, 0, T.PINE_TOP);
         setTile(objects, W, x, 1, T.PINE);
     }
-    // Bottom border: canopy at H-2, trunk at H-1 (skip cols 2-5 for cave entrance)
+    // Bottom border: canopy at H-2, trunk at H-1 (skip cols 3-4 for cave entrance)
     for (let x = 0; x < W; x++) {
-        if (x >= 2 && x <= 5) continue; // leave gap for path + cave entrance
+        if (x >= 3 && x <= 4) continue; // leave gap for cave entrance
         setTile(objects, W, x, H-2, T.PINE_TOP);
         setTile(objects, W, x, H-1, T.PINE);
     }
@@ -171,6 +171,9 @@ function buildCampus() {
         setTile(objects, W, W-1, y, T.PINE_TOP);
         setTile(objects, W, W-1, y + 1, T.PINE);
     }
+    // Close side gaps at row 22 (trunk only — canopy would overlap row 20-21 pair)
+    setTile(objects, W, 0, H-3, T.PINE);    // (0, 22)
+    setTile(objects, W, W-1, H-3, T.PINE);  // (29, 22)
 
     // Pond (upper-left area) — proper shore edges
     // Row 3 (top): TL, T, TR
