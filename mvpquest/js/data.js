@@ -65,17 +65,36 @@ const BLOCKING_TILES = new Set([
     T.PILLAR, T.RACK, T.TERMINAL, T.PEDESTAL,
 ]);
 
-// NPC character sprite definitions {sheet, col, row, layers}
-// Using Kenney character pack — body at col 0, outfit overlay
+// NPC character sprite definitions — layered compositing from Kenney character pack
+// Each entry lists layers drawn bottom-to-top: body, pants, shirt, hair, [shield], [weapon]
+// All coords are {c: col, r: row} on the 'chars' spritesheet (17px stride)
+// Shirt groups: A=cols 6-9, B=cols 10-13, C=cols 14-17 (4 styles × 3 colors)
+// Hair groups: A=cols 19-22, B=cols 23-26 (4 styles × 2 colors)
 const CHAR_SPRITES = {
-    player:   { body: {c:0,r:0}, outfit: {c:4,r:0}  },
-    karen:    { body: {c:0,r:1}, outfit: {c:7,r:1}  },
-    merlin:   { body: {c:0,r:2}, outfit: {c:8,r:2}  },
-    datadave: { body: {c:0,r:3}, outfit: {c:4,r:3}  },
-    priya:    { body: {c:0,r:4}, outfit: {c:7,r:4}  },
-    oracle:   { body: {c:0,r:5}, outfit: {c:5,r:5}  },
-    steve:    { body: {c:0,r:6}, outfit: {c:4,r:6}  },
-    boss:     { body: {c:0,r:7}, outfit: {c:8,r:7}  },
+    player:   { layers: [
+        {c:0,r:0}, {c:3,r:0}, {c:10,r:0}, {c:22,r:0}, {c:42,r:0}
+    ]}, // teal shirt, hat, sword
+    karen:    { layers: [
+        {c:0,r:1}, {c:3,r:1}, {c:14,r:1}, {c:20,r:1}
+    ]}, // pink shirt, long hair
+    merlin:   { layers: [
+        {c:0,r:2}, {c:3,r:2}, {c:17,r:2}, {c:22,r:2}, {c:43,r:2}
+    ]}, // purple robe, beard/hat, staff
+    datadave: { layers: [
+        {c:0,r:3}, {c:3,r:3}, {c:6,r:3}, {c:19,r:3}
+    ]}, // brown shirt, short hair
+    priya:    { layers: [
+        {c:0,r:8}, {c:3,r:8}, {c:10,r:8}, {c:21,r:8}
+    ]}, // teal shirt, glasses (row 8 — row 4 has no body)
+    oracle:   { layers: [
+        {c:0,r:5}, {c:3,r:5}, {c:14,r:5}, {c:20,r:5}
+    ]}, // dark robe, long hair
+    steve:    { layers: [
+        {c:0,r:6}, {c:3,r:6}, {c:10,r:6}, {c:23,r:6}, {c:33,r:6}
+    ]}, // brown shirt, dark short hair, shield
+    boss:     { layers: [
+        {c:0,r:7}, {c:3,r:7}, {c:14,r:7}, {c:26,r:7}, {c:34,r:7}, {c:42,r:7}
+    ]}, // dark armor, dark hat+beard, big shield, sword
 };
 
 // ── Dialog Trees ──────────────────────────────────────────────

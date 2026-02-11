@@ -55,13 +55,12 @@ const Sprites = {
         this.drawSprite(ctx, def.s, def.c, def.r, dx, dy, scale);
     },
 
-    // Draw a character (body + outfit layers)
+    // Draw a character by compositing all layers (body, pants, shirt, hair, shield, weapon)
     drawCharacter(ctx, spriteKey, dx, dy, scale) {
         const charDef = CHAR_SPRITES[spriteKey];
         if (!charDef) return;
-        // Draw body layer
-        this.drawSprite(ctx, 'chars', charDef.body.c, charDef.body.r, dx, dy, scale);
-        // Draw outfit layer on top
-        this.drawSprite(ctx, 'chars', charDef.outfit.c, charDef.outfit.r, dx, dy, scale);
+        for (const layer of charDef.layers) {
+            this.drawSprite(ctx, 'chars', layer.c, layer.r, dx, dy, scale);
+        }
     },
 };
