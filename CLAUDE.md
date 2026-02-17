@@ -12,7 +12,7 @@ Browser RPG (MVPQuest) — vanilla JS + Canvas, no external dependencies, deploy
 
 - **GitHub repo:** `scarolan/off-the-rails`
 - **GitHub Project board:** #4 (`gh project item-add 4 --owner scarolan --url <issue-url>`)
-- **Filing issues:** Use `bug` or `enhancement` label only — do NOT add `shelly` label via CLI. Always add CLI-created issues to the project board.
+- **Filing issues:** "Put it in the backlog" means all three steps: (1) `gh issue create` with `bug`/`enhancement` label, (2) `gh project item-add 4 --owner scarolan --url <URL>`, (3) `gh issue edit <URL> --add-label shelly`. CLI-created issues are NOT auto-added to the board — you must do it manually.
 
 ## Git Conventions
 
